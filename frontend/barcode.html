@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barcode Scanner - Fitness App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+        #scanner-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        #scanner-video {
+            width: 100%;
+            height: auto;
+        }
+        #result {
+            margin-top: 20px;
+        }
+        nav {
+            margin-bottom: 20px;
+        }
+        nav a {
+            margin: 0 10px;
+            text-decoration: none;
+            color: #007BFF;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation to other pages (adjust links as needed) -->
+    <nav>
+        <div class="logo"><h1>Fit'n Verdure</h1></div>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="scan.html">Scan</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="connect.html">Connect</a></li>
+          <li><a href="feedback.html">Feedback</a></li>
+          <li><a href="login.html">Login</a></li>
+          <li><a href="register.html">Register</a></li>
+        </ul>
+      </nav>
+    <h1>Scan a Barcode</h1>
+    <div id="scanner-container">
+        <video id="scanner-video" autoplay muted playsinline></video>
+    </div>
+    <div id="result">Position a barcode in front of the camera...</div>
+
+    <!-- Load QuaggaJS -->
+    <script src="https://unpkg.com/quagga@0.12.1/dist/quagga.min.js"></script>
+    <script>
+        // Initialize QuaggaJS
+        Quagga.init({
+            inputStream: {
+                type: 'LiveStream',
+                target: document.querySelector('#scanner-video'),
+                constraints: {
+                    width: 640,
+                    height: 480,
+                    facingMode: 'environment' // Rear camera
+                }
+            },
+            decoder: {
+                readers: ['upc_reader', 'ean_reader'] // Food barcodes
+            }
+        }, function(err) {
+            if (err) {
+                console.error('Quagga init error:', err);
+                document.getElementById('result').innerHTML = 'Error starting scanner: ' + err.message;
+                return;
+            }
+            console.log('Scanner started');
+            Quagga.start();
+        });
+
+        // Handle barcode detection
+        Quagga.onDetected(async function(result) {
+            const barcode = result.codeResult.code;
+            console.log('Barcode detected:', barcode);
+            document.getElementById('result').innerHTML = `Detected barcode: ${barcode}`;
+
+            // Fetch food data from backend
+            try {
+                const response = await fetch(`http://localhost:3000/api/food/${barcode}`);
+                const data = await response.json();
+
+                if (response.ok) {
+                    document.getElementById('result').innerHTML = `
+                        <h2>${data.name} (${data.brand})</h2>
+                        <p>Calories: ${data.calories} kcal</p>
+                        <p>Fat: ${data.fat}g</p>
+                        <p>Carbs: ${data.carbs}g</p>
+                        <p>Protein: ${data.protein}g</p>
+                        <p>Serving: ${data.serving}</p>
+                    `;
+                    Quagga.stop(); // Stop after success (optional)
+                } else {
+                    document.getElementById('result').innerHTML = `Error: ${data.error}`;
+                }
+            } catch (error) {
+                console.error('Fetch error:', error);
+                document.getElementById('result').innerHTML = 'Failed to connect to server';
+            }
+        });
+    </script>
+</body>
+</html>

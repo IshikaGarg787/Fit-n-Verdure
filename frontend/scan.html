@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Barcode Lookup - Fit'n Verdure</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f5f5f5;
+    }
+    nav {
+      background: #a14bd7;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    nav .logo h1 {
+      color: #fff;
+      margin: 0;
+    }
+    nav ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+    }
+    nav ul li {
+      margin: 0 10px;
+    }
+    nav ul li a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .barcode-section {
+      background: linear-gradient(135deg, #a14bd7, #6f3f9b), url('https://www.transparenttextures.com/patterns/food.png');
+      background-blend-mode: overlay;
+      background-size: contain;
+      background-repeat: repeat;
+      padding: 50px 20px 20px;
+    }
+    .barcode-container {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+      border-radius: 20px;
+      color: #fff;
+      max-width: 650px;
+      margin: 0 auto;
+      padding: 40px;
+      animation: fadeInUp 1s ease-in-out;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .barcode-container h2 {
+      margin-bottom: 10px;
+    }
+    .barcode-container p {
+      font-size: 18px;
+    }
+
+    .barcode-options {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+    @media(min-width: 768px) {
+      .barcode-options {
+        flex-direction: row;
+        justify-content: space-between;
+      }
+    }
+
+    .barcode-input label,
+    .barcode-image h3 {
+      color: #f5f5f5;
+      display: block;
+      margin-bottom: 5px;
+    }
+    .barcode-input input,
+    .barcode-image input {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+    }
+    .barcode-input button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      background: #fff;
+      color: #9142c3;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s ease;
+    }
+    .barcode-input button:hover {
+      background: #9142c3;
+      color: #fff;
+      box-shadow: 0 0 10px rgba(145, 66, 195, 0.5);
+    }
+    .barcode-result {
+      background: #fff;
+      color: #333;
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 20px;
+    }
+    .label {
+      font-weight: bold;
+      color: #9142c3;
+    }
+    #loading {
+      margin-top: 10px;
+      display: none;
+      font-style: italic;
+      color: #fff;
+    }
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="logo"><h1>Fit'n Verdure</h1></div>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="connect.html">Connect</a></li>
+      <li><a href="feedback.html">Feedback</a></li>
+      <li><a href="login.html">Login</a></li>
+      <li><a href="register.html">Register</a></li>
+    </ul>
+  </nav>
+
+  <section class="barcode-section">
+    <div class="barcode-container">
+      <h2><i class="fas fa-barcode"></i> Barcode Lookup</h2>
+      <p>Enter a barcode or upload an image to get food details.</p>
+      <div class="barcode-options">
+        <div class="barcode-input">
+          <label for="barcode"><i class="fas fa-keyboard"></i> Enter Barcode:</label>
+          <input type="text" id="barcode" placeholder="e.g., 8904004400762" required>
+          <button onclick="lookupBarcode()">Lookup</button>
+        </div>
+        <div class="barcode-image">
+          <h3><i class="fas fa-image"></i> Upload Barcode Image:</h3>
+          <input type="file" id="barcode-image" accept="image/*" onchange="processBarcodeImage()">
+          <p>Upload a clear image of a barcode.</p>
+        </div>
+      </div>
+      <div id="loading"><i class="fas fa-spinner fa-spin"></i> Fetching data...</div>
+      <div id="barcode-result" class="barcode-result">
+        <h3>Results</h3>
+        <p id="result-text">Your barcode results will appear here.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2025 Fit'n Verdure. All rights reserved.</p>
+  </footer>
+
+  <script src="https://unpkg.com/@zxing/library@0.20.0/umd/index.min.js"></script>
+  <script>
+    async function fetchBarcodeData(barcode) {
+      document.getElementById('loading').style.display = 'block';
+      try {
+        const response = await fetch(`http://localhost:3000/api/food/${barcode}`);
+        const data = await response.json();
+        if (response.ok) {
+          document.getElementById('result-text').innerHTML = `
+            <span class="label">${data.name}</span> (${data.brand})<br>
+            <span class="label">Calories:</span> ${data.calories} kcal<br>
+            <span class="label">Fat:</span> ${data.fat}g<br>
+            <span class="label">Carbs:</span> ${data.carbs}g<br>
+            <span class="label">Protein:</span> ${data.protein}g<br>
+            <span class="label">Serving:</span> ${data.serving}
+          `;
+        } else {
+          document.getElementById('result-text').innerHTML = `Error: ${data.error}`;
+        }
+      } catch (error) {
+        console.error('Fetch error:', error);
+        document.getElementById('result-text').innerHTML = 'Failed to connect to server';
+      } finally {
+        document.getElementById('loading').style.display = 'none';
+      }
+    }
+
+    function lookupBarcode() {
+      const barcode = document.getElementById('barcode').value.trim();
+      if (!barcode) {
+        document.getElementById('result-text').innerHTML = 'Please enter a barcode.';
+        return;
+      }
+      fetchBarcodeData(barcode);
+    }
+
+    async function processBarcodeImage() {
+      const fileInput = document.getElementById('barcode-image');
+      const file = fileInput.files[0];
+      if (!file) {
+        document.getElementById('result-text').innerHTML = 'Please upload an image.';
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = async function(e) {
+        const img = new Image();
+        img.src = e.target.result;
+        img.onload = async function() {
+          const codeReader = new ZXing.BrowserMultiFormatReader();
+          try {
+            const result = await codeReader.decodeFromImageElement(img);
+            const barcode = result.text;
+            document.getElementById('result-text').innerHTML = `Detected barcode: ${barcode}`;
+            fetchBarcodeData(barcode);
+          } catch (error) {
+            console.error('ZXing error:', error);
+            document.getElementById('result-text').innerHTML = 'No barcode detected in image.';
+          }
+        };
+      };
+      reader.readAsDataURL(file);
+    }
+  </script>
+</body>
+</html>

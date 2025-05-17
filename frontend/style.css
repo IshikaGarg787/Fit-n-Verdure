@@ -1,0 +1,176 @@
+styles.css---/* General Body Styles */
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, rgba(128, 0, 128, 0.9), rgba(75, 0, 130, 0.9));
+    color: #fff;
+    line-height: 1.6;
+  }
+  
+  h1, h2, h3 {
+    font-weight: bold;
+    color: #fff;
+  }
+  
+  a {
+    color: #fff;
+    text-decoration: none;
+  }
+  
+  a:hover {
+    color: #f1f1f1;
+  }
+  
+  /* Navbar Styles */
+  nav {
+    background-color: #6a1b9a;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  nav .logo h1 {
+    font-size: 28px;
+  }
+  
+  nav ul {
+    display: flex;
+    list-style: none;
+  }
+  
+  nav ul li {
+    margin-left: 20px;
+  }
+  
+  nav ul li a {
+    font-size: 18px;
+    text-transform: uppercase;
+  }
+  
+  /* Scan Page Styles */
+  .scan-section {
+    padding: 60px 20px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    max-width: 1000px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  
+  .scan-container h2 {
+    font-size: 36px;
+    color: #f4f4f9;
+  }
+  
+  .scan-options {
+    display: flex;
+    justify-content: space-between;
+    gap: 30px;
+    margin-top: 20px;
+  }
+  
+  .barcode-input, .scan-image {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    width: 48%;
+  }
+  
+  #scan-result {
+    background-color: #fff;
+    margin-top: 40px;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  button {
+    background-color: #6a1b9a;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+  }
+  
+  button:hover {
+    background-color: #4a148c;
+  }
+  
+  /* About Page Styles */
+  .about-section {
+    padding: 60px 20px;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+  }
+  
+  .about-container h2 {
+    font-size: 40px;
+    color: #f4f4f9;
+  }
+  
+  .about-container p {
+    font-size: 18px;
+    color: #f4f4f9;
+    margin-top: 20px;
+  }
+  
+  .about-container h3 {
+    color: #fff;
+    margin-top: 40px;
+  }
+  
+  ul {
+    list-style: none;
+    margin: 20px 0;
+    padding: 0;
+  }
+  
+  ul li {
+    font-size: 18px;
+  }
+  
+  .team-section {
+    margin-top: 40px;
+  }
+  
+  .team-members {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+  }
+  
+  .team-member img {
+    border-radius: 50%;
+    width: 150px;
+    height: 150px;
+    margin-bottom: 10px;
+  }
+  
+  .about-images {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+  }
+  
+  .about-images img {
+    max-width: 45%;
+    margin: 0 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Footer */
+  footer {
+    background-color: #6a1b9a;
+    text-align: center;
+    padding: 20px;
+    color: #fff;
+    position: relative;
+  }
